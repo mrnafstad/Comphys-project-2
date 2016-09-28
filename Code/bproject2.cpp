@@ -102,20 +102,25 @@ void jacobi_method ( double ** A, double ** R, int n )
 
 int main( int argc, char * argv[] )
 {
-	double n =  atof(argv[1]);
+	int n =  atoi(argv[1]);
 	double rhoN =  atof(argv[1]);
 	double rho0 = 0.0;
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
-	double **A, **R;
-	A = (double**) matrix(n, n, sizeof(double));
-	R = (double**) matrix(n, n, sizeof(double));
-
+	
+	double **A;
+	double **R;
+	A = new double*[n];
+	R = new double*[n];
+	for ( int i = 0; i < n; i++ ) {
+		A[i] = new double [n]; 
+		R[i] = new double [n];
+	}
 
 	//define our tridiagonal matrix
 	for ( int i = 0; i < n; i++) {
 		rho[i] = rho0 + i*h;
-		for (int j = 0, j < n; j++) {
+		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
 				A[i][j] = 0.0;
 			}
