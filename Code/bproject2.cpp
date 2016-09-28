@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include "lib.h"
 //#include "jacobi.h"
 
 //Function to find maximum matrix element.
@@ -105,9 +106,10 @@ int main( int argc, char * argv[] )
 	double rhoN =  atof(argv[1]);
 	double rho0 = 0.0;
 	double h = ( rhoN - rho0 ) / (double) n;
-	double *rho = new double [n];
-	double **A = (double**) [n][n];
-	double **R = (double**) [n][n];
+	double* rho = new double[n];
+	double **A, **R;
+	A = (double**) matrix(n, n, sizeof(double));
+	R = (double**) matrix(n, n, sizeof(double));
 
 
 	//define our tridiagonal matrix
