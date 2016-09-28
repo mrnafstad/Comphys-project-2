@@ -108,6 +108,7 @@ int main( int argc, char * argv[] )
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
 	
+	//define our tridiagonal matrix
 	double **A;
 	double **R;
 	A = new double*[n];
@@ -117,13 +118,18 @@ int main( int argc, char * argv[] )
 		R[i] = new double [n];
 	}
 
-	//define our tridiagonal matrix
 	for ( int i = 0; i < n; i++) {
 		rho[i] = rho0 + i*h;
+		double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
-				A[i][j] = 0.0;
+				A[i][j] = 2 / ( h*h ) + Vi;
+			}
+			if ( fabs( i - j ) == 2 ) {
+				A[i][j] = -1 / ( h*h );
+				A[j][i] = A[i][j];
 			}
 		}
 	}
+	jacobi_method ( A, R, n );
 }
