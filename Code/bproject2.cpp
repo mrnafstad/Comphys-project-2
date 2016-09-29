@@ -105,31 +105,40 @@ void three_low ( double * v, int n)
 {
 //v is array to find the lowest values of, n is length of array
 
-	double k, l;
+	double k, l, total_time;
 	double * smallest = new double [3];
-	smallest[0] = v[0];
+	clock_t s, f;
+	s = clock(); 
+	for ( int i = 0; i < 3; i++) smallest[i] = v[i];
+
 	for ( int i = 0; i < n; i++ ) {
 		
 		if ( fabs(v[i]) < fabs(smallest[0]) ) {
 			smallest[0] = v[i];
 			k = i;
-			cout << v[i] << "\n";
-		}
-	}
-	for ( int i = 0; i < n; i++ ) {
-		if ( fabs(v[i]) < smallest[1] && i !=k ) {
-			smallest[1] = v[i];
-			l = i;
+			//cout << v[i] << " k = " << i << "\n";
 		}
 	}
 
 	for ( int i = 0; i < n; i++ ) {
-		if ( fabs(v[i]) < smallest[2] && i !=k && i != l) {
+		if ( ( fabs(v[i]) < fabs(smallest[1]) ) && i != k ) {
+			smallest[1] = v[i];
+			l = i;
+			//cout << v[i] << " l = " << i << "\n";
+		}
+	}
+
+	for ( int i = 0; i < n; i++ ) {
+		if ( ( fabs(v[i]) < fabs(smallest[2]) ) && ( i !=k ) && i != l) {
 			smallest[2] = v[i];
+			//cout << v[i] << " m = " << i << "\n";
 		}
 	}
 
 	for ( int i = 0; i < 3; i++) cout << smallest[i] << "\n";
+	f = clock();
+	total_time = ( ( double ) ( f - s ) / CLOCKS_PER_SEC );
+	cout << "Time spent on ekstracting eigenvalues: " << total_time << "\n";
 	return;
 }
 
