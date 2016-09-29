@@ -138,7 +138,7 @@ void three_low ( double * v, int n)
 	for ( int i = 0; i < 3; i++) cout << smallest[i] << "\n";
 	f = clock();
 	total_time = ( ( double ) ( f - s ) / CLOCKS_PER_SEC );
-	cout << "Time spent on ekstracting eigenvalues: " << total_time << "\n";
+	printf("Time spent on ekstracting eigenvalues:  %1.3e \n", total_time);
 	return;
 }
 
@@ -183,7 +183,7 @@ int main( int argc, char * argv[] )
 	jacobi_method ( A, R, n );
 	finish = clock();
 	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
-	cout << "Time spent on algorithm " << total_time << " seconds \n";
+	printf("Time spent on algorithm:  %1.3e \n", total_time);
 	double * lam = new double[n];
 	for ( int i = 0; i < n; i++) {
 		lam[i] = A[i][i];
