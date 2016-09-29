@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "lib.h"
 //#include "jacobi.h"
 
@@ -31,10 +32,10 @@ void rotate ( double ** A, double ** R, int k, int l, int n)
 		double t, tau;
 		tau = ( A[l][l] - A[k][k] ) / ( 2*A[k][l] );
 		if ( tau > 0 ) {
-			t = 1.0 / ( tau + sqrt( 1.0 + tau*tau ) );
+			t = 1.0 / ( double ) ( tau + sqrt( 1.0 + tau*tau ) );
 		}
 		else {
-			t = -1.0 / ( -tau + sqrt( 1.0 + tau*tau ) );
+			t = -1.0 / ( double ) ( -tau + sqrt( 1.0 + tau*tau ) );
 		}
 
 		c = 1 / sqrt( 1 + t*t );
@@ -107,6 +108,8 @@ int main( int argc, char * argv[] )
 	double rho0 = 0.0;
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
+	double total_time;
+	clock_t start, finish;
 	
 	//define our tridiagonal matrix
 	double **A;
@@ -123,13 +126,22 @@ int main( int argc, char * argv[] )
 		double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
-				A[i][j] = 2 / ( h*h ) + Vi;
+				A[i][j] = 2 / (double) ( h*h ) + Vi;
 			}
 			if ( fabs( i - j ) == 2 ) {
 				A[i][j] = -1 / ( h*h );
 				A[j][i] = A[i][j];
 			}
+			else A[i][j] = 0.0;
 		}
 	}
+	start = clock();
 	jacobi_method ( A, R, n );
+	finish = clock();
+	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
+	cout << "Time spent on algorithm " << total_time << " seconds \n";
+	//for ( int i = 0; i < n; i++) {
+	//	double lam = A[i][i];
+	//	cout << "Eigenvalue for eigenvector " << i << " is " << lam << "\n";
+	//}
 }
