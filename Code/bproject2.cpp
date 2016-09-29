@@ -14,10 +14,11 @@ double maxoffdiag ( double **A, int * k, int * l, int n)
 
 	for ( int i = 0; i < n; i++ ) {
 		for ( int j = 0; j < n; j++ ) {
-			if ( fabs(A[i][j]) > max ) {
+			if ( fabs(A[i][j]) > max && i != j) {
 				max  = fabs(A[i][j]);
 				*l = i;
 				*k = j;
+				//cout << i << j << "\n";
 			}
 		}
 	}
@@ -38,7 +39,7 @@ void rotate ( double ** A, double ** R, int k, int l, int n)
 			t = -1.0 / ( double ) ( -tau + sqrt( 1.0 + tau*tau ) );
 		}
 
-		c = 1 / sqrt( 1 + t*t );
+		c = 1 / ( double ) sqrt( 1 + t*t );
 		s = c * t;
 	}
 	else {
@@ -104,7 +105,7 @@ void jacobi_method ( double ** A, double ** R, int n )
 int main( int argc, char * argv[] )
 {
 	int n =  atoi(argv[1]);
-	double rhoN =  atof(argv[1]);
+	double rhoN =  atof(argv[2]);
 	double rho0 = 0.0;
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
@@ -126,22 +127,28 @@ int main( int argc, char * argv[] )
 		double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
-				A[i][j] = 2 / (double) ( h*h ) + Vi;
+				A[i][j] = 2.0 / (double) ( h*h ) + Vi;
 			}
-			if ( fabs( i - j ) == 2 ) {
-				A[i][j] = -1 / ( h*h );
+			else if ( fabs( i - j ) == 1 ) {
+				A[i][j] = -1.0 / ( h*h );
 				A[j][i] = A[i][j];
 			}
 			else A[i][j] = 0.0;
+			//cout << "A_ "<< i << j << " " << A[i][j] << "\n";
 		}
+		//cout << "--\n";
 	}
 	start = clock();
 	jacobi_method ( A, R, n );
 	finish = clock();
 	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
 	cout << "Time spent on algorithm " << total_time << " seconds \n";
-	//for ( int i = 0; i < n; i++) {
-	//	double lam = A[i][i];
-	//	cout << "Eigenvalue for eigenvector " << i << " is " << lam << "\n";
-	//}
+	for ( int i = 0; i < n; i++) {
+		double lam = A[i][i];
+		cout << "Eigenvalue for eigenvector " << i << " is " << lam << "\n";
+		for ( int j = 0; j < n; j++) {
+			cout << A[i][j] << "\n";
+		}
+	}
+	
 }
