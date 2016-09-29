@@ -130,7 +130,7 @@ int main( int argc, char * argv[] )
 				A[i][j] = 2.0 / (double) ( h*h ) + Vi;
 			}
 			else if ( fabs( i - j ) == 1 ) {
-				A[i][j] = -1.0 / ( h*h );
+				A[i][j] = -1.0 / (double)( h*h );
 				A[j][i] = A[i][j];
 			}
 			else A[i][j] = 0.0;
@@ -143,12 +143,16 @@ int main( int argc, char * argv[] )
 	finish = clock();
 	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
 	cout << "Time spent on algorithm " << total_time << " seconds \n";
+	double * lam = new double[n];
 	for ( int i = 0; i < n; i++) {
-		double lam = A[i][i];
-		cout << "Eigenvalue for eigenvector " << i << " is " << lam << "\n";
-		for ( int j = 0; j < n; j++) {
+		lam[i] = A[i][i];
+
+		cout <<" | " << lam[i];
+		/*for ( int j = 0; j < n; j++) {
 			cout << A[i][j] << "\n";
 		}
+	*/
 	}
 	
+
 }
