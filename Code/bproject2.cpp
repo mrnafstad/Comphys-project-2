@@ -101,6 +101,38 @@ void jacobi_method ( double ** A, double ** R, int n )
 	return;
 }
 
+void three_low ( double * v, int n)
+{
+//v is array to find the lowest values of, n is length of array
+
+	double k, l;
+	double * smallest = new double [3];
+	smallest[0] = v[0];
+	for ( int i = 0; i < n; i++ ) {
+		
+		if ( fabs(v[i]) < fabs(smallest[0]) ) {
+			smallest[0] = v[i];
+			k = i;
+			cout << v[i] << "\n";
+		}
+	}
+	for ( int i = 0; i < n; i++ ) {
+		if ( fabs(v[i]) < smallest[1] && i !=k ) {
+			smallest[1] = v[i];
+			l = i;
+		}
+	}
+
+	for ( int i = 0; i < n; i++ ) {
+		if ( fabs(v[i]) < smallest[2] && i !=k && i != l) {
+			smallest[2] = v[i];
+		}
+	}
+
+	for ( int i = 0; i < 3; i++) cout << smallest[i] << "\n";
+	return;
+}
+
 
 int main( int argc, char * argv[] )
 {
@@ -147,12 +179,13 @@ int main( int argc, char * argv[] )
 	for ( int i = 0; i < n; i++) {
 		lam[i] = A[i][i];
 
-		cout <<" | " << lam[i];
+		//cout <<" | " << lam[i];
 		/*for ( int j = 0; j < n; j++) {
 			cout << A[i][j] << "\n";
 		}
 	*/
 	}
+	three_low ( lam, n);
 	
 
 }
