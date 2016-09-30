@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "lib.h"
-//#include "jacobi.h"
+//#include "lib.h"
 
 //Function to find maximum matrix element.
 
@@ -22,6 +21,7 @@ double maxoffdiag ( double **A, int * k, int * l, int n)
 			}
 		}
 	}
+
 	return max;
 }
 
@@ -72,7 +72,7 @@ void rotate ( double ** A, double ** R, int k, int l, int n)
 	return;
 }
 
-void jacobi_method ( double ** A, double ** R, int n )
+void jacobi_method ( double ** A, double ** R, int n)
 {
 //Settup of eigenvector
 	for ( int i = 0; i < n; i++){
@@ -90,10 +90,10 @@ void jacobi_method ( double ** A, double ** R, int n )
 	double epsilon = 1.0e-8;
 	double max_number_iterations = (double) n * (double) n * (double) n;
 	int iterations = 0;
-	double max_offdiag = maxoffdiag ( A, &k, &l, n );
+	double max_offdiag = maxoffdiag ( A, &k, &l, n);
 
 	while ( fabs(max_offdiag) > epsilon && (double) iterations < max_number_iterations ){
-		max_offdiag = maxoffdiag( A, &k, &l, n );
+		max_offdiag = maxoffdiag( A, &k, &l, n);
 		rotate (A, R, k, l, n);
 		iterations++;
 	}
@@ -135,11 +135,69 @@ void three_low ( double * v, int n)
 		}
 	}
 
-	for ( int i = 0; i < 3; i++) cout << smallest[i] << "\n";
+	for ( int i = 0; i < 3; i++) std::cout << smallest[i] << "\n";
 	f = clock();
 	total_time = ( ( double ) ( f - s ) / CLOCKS_PER_SEC );
-	printf("Time spent on ekstracting eigenvalues:  %1.3e \n", total_time);
+	printf("Time spent on extracting eigenvalues:  %1.3e \n", total_time);
 	return;
+}
+
+void unit_test(double **R){
+	double **Matr, max_test;
+	int n_test = 5, k, l;
+
+	Matr = new double*[n_test];
+
+	for(int i = 0; i < n_test; i++){
+		Matr[i] = new double [n_test];
+	}
+
+	/*Creating a symmetric tridiagonal 5x5 matrix with 1's on the diagonal
+	and the numbers 1-4 on the diagonals above and below. 
+	Known eigenvalues:
+	1: -4.16352, 2: -0.827046 3: 1.0, 4: 2.82705, 5: 6.16352
+	https://www.wolframalpha.com/input/?i=eigenvalues+{{1,+1,+0,+0,+0},{1,+1,+2,+0,0},+{0,+2,+1,+3,+0},+{0,+0,+3,+1,+4},+{0,+0,+0,+4,+1}}*/
+
+	for(int i = 0; i < n_test; i++){
+		for(int j = 0; j < n_test; j++){
+			if(i == j){
+				Matr[i][j] = 1;
+			}
+			else if(j == i +1){
+				Matr[i][j] = i + 1;
+			}
+			else if(j == i -1){
+				Matr[i][j] = i;
+			}
+			else{
+				Matr[i][j] = 0;
+			}
+		}
+	}
+	// Print Matrix elements to see that it's correct
+	/*for(int i = 0; i < n_test; i++){
+		for(int j = 0; j < n_test; j++){
+			printf("%f\n", Matr[i][j]);
+		}
+	}*/
+
+	printf("-------------------------------------------\nUNIT TEST\n\n");
+
+	//Known max offdiag element: 4
+	max_test = maxoffdiag(Matr, &k, &l, n_test);
+	printf("Max off diagonal element of Matr: %f\n\n", max_test);
+	
+	jacobi_method(Matr, R, n_test);
+
+	for(int i = 0; i < n_test; i++){
+		printf("Eigenvalue %i: %f\n", i+1, Matr[i][i]);
+	}
+	printf("-------------------------------------------\n");
+
+	delete[] Matr;
+
+	return;
+
 }
 
 
@@ -179,6 +237,13 @@ int main( int argc, char * argv[] )
 		}
 		//cout << "--\n";
 	}
+
+	//RUNNING UNIT TESTS
+	unit_test(R);
+
+
+	//MAIN RUN
+	//------------------------------------
 	start = clock();
 	jacobi_method ( A, R, n );
 	finish = clock();
@@ -187,14 +252,21 @@ int main( int argc, char * argv[] )
 	double * lam = new double[n];
 	for ( int i = 0; i < n; i++) {
 		lam[i] = A[i][i];
+	}
+
+	//------------------------------------
+
 
 		//cout <<" | " << lam[i];
 		/*for ( int j = 0; j < n; j++) {
 			cout << A[i][j] << "\n";
 		}
 	*/
-	}
-	three_low ( lam, n);
-	
 
+	three_low ( lam, n);
+
+	delete[] A; delete[] R; delete[] rho;
+
+	return 0;
+	
 }
