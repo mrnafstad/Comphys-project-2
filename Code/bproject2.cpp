@@ -101,11 +101,11 @@ void jacobi_method ( double ** A, double ** R, int n)
 	return;
 }
 
-void three_low ( double * v, int n)
+int three_low ( double * v, int n)
 {
-//v is array to find the lowest values of, n is length of array
+//v is array to find the lowest values of, n is length of array. Randomly choden variables xyz here
 
-	double k, l, total_time;
+	double x, y, z, total_time;
 	double * smallest = new double [3];
 	clock_t s, f;
 	s = clock(); 
@@ -115,22 +115,23 @@ void three_low ( double * v, int n)
 		
 		if ( fabs(v[i]) < fabs(smallest[0]) ) {
 			smallest[0] = v[i];
-			k = i;
+			x = i;
 			//cout << v[i] << " k = " << i << "\n";
 		}
 	}
 
 	for ( int i = 0; i < n; i++ ) {
-		if ( ( fabs(v[i]) < fabs(smallest[1]) ) && i != k ) {
+		if ( ( fabs(v[i]) < fabs(smallest[1]) ) && i != x ) {
 			smallest[1] = v[i];
-			l = i;
+			y = i;
 			//cout << v[i] << " l = " << i << "\n";
 		}
 	}
 
 	for ( int i = 0; i < n; i++ ) {
-		if ( ( fabs(v[i]) < fabs(smallest[2]) ) && ( i !=k ) && i != l) {
+		if ( ( fabs(v[i]) < fabs(smallest[2]) ) && ( i !=x ) && i != y) {
 			smallest[2] = v[i];
+			z = i;
 			//cout << v[i] << " m = " << i << "\n";
 		}
 	}
@@ -139,7 +140,7 @@ void three_low ( double * v, int n)
 	f = clock();
 	total_time = ( ( double ) ( f - s ) / CLOCKS_PER_SEC );
 	printf("Time spent on extracting eigenvalues:  %1.3e \n", total_time);
-	return;
+	return x, y, z;
 }
 
 void unit_test(double **R){
@@ -209,12 +210,24 @@ double potential(double omega, double r, int coloumb )
 	return V;
 }
 
+double usquared( double **R, int n, int t)
+{
+	double * u2 = new double[n];
+	for ( int j = 0; j < n; j++ ) {
+		u2[j] = R[t][j]*R[t][j];
+	
+	}
+		
+	//printf("U(r) = %1.3e\n", u2[i] );
+	return * u2;
+}
+
 
 int main( int argc, char * argv[] )
 {
 	int n =  atoi(argv[1]);
 	double rhoN =  atof(argv[2]);
-	double rho0 = 0.0;
+	double rho0 = 1e-10;
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
 	double total_time;
@@ -273,7 +286,8 @@ int main( int argc, char * argv[] )
 		}
 	*/
 
-	three_low ( lam, n);
+	int x, y, z = three_low ( lam, n);
+	double sqru1 = usquared( R, n, 0 );
 
 	delete[] A; delete[] R; delete[] rho;
 
