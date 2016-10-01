@@ -101,7 +101,7 @@ void jacobi_method ( double ** A, double ** R, int n)
 	return;
 }
 
-double three_low ( double * v, int n)
+double *three_low ( double * v, int n)
 {
 //v is array to find the lowest values of, n is length of array. Randomly choden variables xyz here
 
@@ -145,7 +145,7 @@ double three_low ( double * v, int n)
 	f = clock();
 	total_time = ( ( double ) ( f - s ) / CLOCKS_PER_SEC );
 	printf("Time spent on extracting eigenvalues:  %1.3e \n", total_time);
-	return * eigpos;
+	return eigpos;
 }
 
 void unit_test(double **R){
@@ -291,10 +291,10 @@ int main( int argc, char * argv[] )
 		}
 	*/
 
-	double t = three_low ( lam, n);
+	double *t = three_low ( lam, n);
 	double sqru1 = usquared( R, n, t[0] );
-	double sqru2 = usquared( R, n, y );
-	double sqru3 = usquared( R, n, z );
+	double sqru2 = usquared( R, n, t[1] );
+	double sqru3 = usquared( R, n, t[2] );
 
 	delete[] A; delete[] R; delete[] rho;
 
