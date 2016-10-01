@@ -210,8 +210,8 @@ void unit_test(double **R){
 double potential(double omega, double r, int coloumb )
 {
 	double V;
-	if ( coloumb == 0.0 ) V =  omega*r*r;
-	if ( coloumb == 1.0 ) V = omega*r*r + 1.0/(double)r;
+	if ( coloumb == 0.0 ) V =  omega*omega*r*r;
+	if ( coloumb == 1.0 ) V = omega*omega*r*r + 1.0/(double)r;
 	return V;
 }
 
