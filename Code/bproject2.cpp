@@ -215,7 +215,7 @@ double potential(double omega, double r, int coloumb )
 	return V;
 }
 
-double usquared( double **R, int n, int t)
+double *usquared( double **R, int n, int t)
 {
 	double * u2 = new double[n];
 	for ( int j = 0; j < n; j++ ) {
@@ -292,9 +292,9 @@ int main( int argc, char * argv[] )
 	*/
 
 	double *t = three_low ( lam, n);
-	double sqru1 = usquared( R, n, t[0] );
-	double sqru2 = usquared( R, n, t[1] );
-	double sqru3 = usquared( R, n, t[2] );
+	double *sqru1 = usquared( R, n, t[0] );
+	double *sqru2 = usquared( R, n, t[1] );
+	double *sqru3 = usquared( R, n, t[2] );
 
 	delete[] A; delete[] R; delete[] rho;
 
