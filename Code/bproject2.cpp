@@ -201,6 +201,15 @@ void unit_test(double **R){
 }
 
 
+double potential(double omega, double r, int coloumb )
+{
+	double V;
+	if ( coloumb == 0.0 ) V =  omega*r*r;
+	if ( coloumb == 1.0 ) V = omega*r*r + 1.0/(double)r;
+	return V;
+}
+
+
 int main( int argc, char * argv[] )
 {
 	int n =  atoi(argv[1]);
@@ -223,7 +232,8 @@ int main( int argc, char * argv[] )
 
 	for ( int i = 0; i < n; i++) {
 		rho[i] = rho0 + i*h;
-		double Vi = rho[i]*rho[i];
+		double Vi = potential( 1.0,  rho[i], 1.0 );
+		//double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
 				A[i][j] = 2.0 / (double) ( h*h ) + Vi;
