@@ -53,7 +53,7 @@ for line in f:
 five = array(five)
 
 #just a random comment
-plot(rho, u, "r")
+plot(rho, u, "b--")
 hold("On")
 plot(rho, v)
 plot(rho, milli)
