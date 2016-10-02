@@ -232,6 +232,10 @@ int main( int argc, char * argv[] )
 {
 	int n =  atoi(argv[1]);
 	double rhoN =  atof(argv[2]);
+	double omega = atof(argv[3]);
+	double coloumb = atof(argv[4]);
+	std::string file = ( argv[5] );
+	const char* filename = file.c_str();
 	double rho0 = 1e-10;
 	double h = ( rhoN - rho0 ) / (double) n;
 	double* rho = new double[n];
@@ -250,7 +254,7 @@ int main( int argc, char * argv[] )
 
 	for ( int i = 0; i < n; i++) {
 		rho[i] = rho0 + i*h;
-		double Vi = potential( 1.0,  rho[i], 1.0 );
+		double Vi = potential( omega,  rho[i], coloumb );
 		//double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
@@ -277,10 +281,13 @@ int main( int argc, char * argv[] )
 	finish = clock();
 	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
 	printf("Time spent on algorithm:  %1.3e \n", total_time);
+
 	double * lam = new double[n];
+	
 	for ( int i = 0; i < n; i++) {
 		lam[i] = A[i][i];
 	}
+
 
 	//------------------------------------
 
@@ -296,17 +303,17 @@ int main( int argc, char * argv[] )
 	double *sqru2 = usquared( R, n, t[1] );
 	double *sqru3 = usquared( R, n, t[2] );
 
+
 	FILE *fp;
 
-	fp = fopen("u1.txt", "w+");
+	fp = fopen(filename, "w+");
 
 	for (int i = 0; i < n; i++){
 		fprintf(fp, "%f\n", sqru1[i]);
 	}
 
 	fclose(fp);
-
-	printf("%f", sqru1[0]);
+	
 
 	delete[] A; delete[] R; delete[] rho; delete [] t;
 	delete[] sqru1; delete[] sqru2; delete[] sqru3;

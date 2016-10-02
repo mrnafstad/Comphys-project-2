@@ -2,17 +2,48 @@ from matplotlib.pylab import *
 from numpy import *
 
 n = 100
-rhoN = 5.0
+rhoN = 4.0
 
 rho = linspace(1e-10, rhoN, n)
 u = []
 
-f = open("u1.txt", "r")
+
+f = open("nonint.txt", "r")
 
 for line in f:
 	u.append(float(line))
 
 u = array(u)
+v = []
 
-plot(rho, u)
+f = open("interacting1.txt", "r")
+
+for line in f:
+	v.append(float(line))
+
+v = array(v)
+
+milli = []
+
+f = open("intmilli.txt", "r")
+
+for line in f:
+	milli.append(float(line))
+
+milli= array(milli)
+
+half = []
+
+f = open("inthalf.txt", "r")
+
+for line in f:
+	half.append(float(line))
+
+half = array(half)
+#just a random comment
+plot(rho, u, "r")
+hold("On")
+plot(rho, v)
+plot(rho, milli)
+plot(rho, half)
 show()
