@@ -1,8 +1,8 @@
 from matplotlib.pylab import *
 from numpy import *
 
-n = 100
-rhoN = 4.0
+n = 500
+rhoN = 5.0
 
 rho = linspace(1e-10, rhoN, n)
 u = []
@@ -61,5 +61,5 @@ plot(rho, half)
 plot(rho, five)
 xlabel(r"$\rho$")
 ylabel(r"$|u(\rho)|^2$")
-legend(["Non interactive", r"interactive $\omega_r = 1.0$" r"interactive $\omega_r = 0.001$", r"interactive $\omega_r = 0.5$", r"interactive $\omega_r = 5$"])
+legend(["Non interactive", r"interactive $\omega_r = 1.0$", r"interactive $\omega_r = 0.001$", r"interactive $\omega_r = 0.5$", r"interactive $\omega_r = 5$"])
 show()
