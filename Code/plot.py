@@ -40,13 +40,26 @@ for line in f:
 	half.append(float(line))
 
 half = array(half)
+
+
+
+five = []
+
+f = open("intfive.txt", "r")
+
+for line in f:
+	five.append(float(line))
+
+five = array(five)
+
 #just a random comment
 plot(rho, u, "r")
 hold("On")
 plot(rho, v)
 plot(rho, milli)
 plot(rho, half)
+plot(rho, five)
 xlabel(r"$\rho$")
 ylabel(r"$|u(\rho)|^2$")
-legend(["Non interactive", r"interactive $\omega_r = 1.0$" r"interactive $\omega_r = 0.001$", r"interactive $\omega_r = 0.5$"])
+legend(["Non interactive", r"interactive $\omega_r = 1.0$" r"interactive $\omega_r = 0.001$", r"interactive $\omega_r = 0.5$", r"interactive $\omega_r = 5$"])
 show()
