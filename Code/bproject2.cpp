@@ -215,16 +215,16 @@ double potential(double omega, double r, int coloumb )
 	return V;
 }
 
-double usquared( double **R, int n, int t)
+double *usquared( double **R, int n, int t)
 {
 	double * u2 = new double[n];
 	for ( int j = 0; j < n; j++ ) {
-		u2[j] = R[t][j]*R[t][j];
+		u2[j] = R[j][t]*R[j][t];
 	
 	}
 		
 	//printf("U(r) = %1.3e\n", u2[i] );
-	return * u2;
+	return u2;
 }
 
 
@@ -267,7 +267,7 @@ int main( int argc, char * argv[] )
 	}
 
 	//RUNNING UNIT TESTS
-	unit_test(R);
+	//unit_test(R);
 
 
 	//MAIN RUN
@@ -292,11 +292,24 @@ int main( int argc, char * argv[] )
 	*/
 
 	double *t = three_low ( lam, n);
-	double sqru1 = usquared( R, n, t[0] );
-	double sqru2 = usquared( R, n, t[1] );
-	double sqru3 = usquared( R, n, t[2] );
+	double *sqru1 = usquared( R, n, t[0] );
+	double *sqru2 = usquared( R, n, t[1] );
+	double *sqru3 = usquared( R, n, t[2] );
 
-	delete[] A; delete[] R; delete[] rho;
+	FILE *fp;
+
+	fp = fopen("u1.txt", "w+");
+
+	for (int i = 0; i < n; i++){
+		fprintf(fp, "%f\n", sqru1[i]);
+	}
+
+	fclose(fp);
+
+	printf("%f", sqru1[0]);
+
+	delete[] A; delete[] R; delete[] rho; delete [] t;
+	delete[] sqru1; delete[] sqru2; delete[] sqru3;
 
 	return 0;
 	
