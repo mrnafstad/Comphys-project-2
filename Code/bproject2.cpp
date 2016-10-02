@@ -101,9 +101,10 @@ void jacobi_method ( double ** A, double ** R, int n)
 	return;
 }
 
+//Function to find the three lowest eigenvalues of a set
 double *three_low ( double * v, int n)
 {
-//v is array to find the lowest values of, n is length of array. Randomly choden variables xyz here
+//v is array to find the lowest values of, n is length of array. Randomly chosen variables xyz here
 
 	int x, y, z;
 	double total_time;
@@ -148,14 +149,19 @@ double *three_low ( double * v, int n)
 	return eigpos;
 }
 
+//Unit tests for eigenvalues and ortogonality of basis R
 void unit_test(double **R){
-	double **Matr, max_test;
+	double **Matr, **Trans, **Prod;
 	int n_test = 5, k, l;
 
-	Matr = new double*[n_test];
+	Matr = new double*[n_test];   //Test matrix
+	Trans = new double*[n_test];  //Tranpose of the test matrix
+	Prod = new double*[n_test];   //Multiplication of the two above
 
 	for(int i = 0; i < n_test; i++){
 		Matr[i] = new double [n_test];
+		Trans[i] = new double [n_test];
+		Prod[i] = new double [n_test];
 	}
 
 	/*Creating a symmetric tridiagonal 5x5 matrix with 1's on the diagonal
@@ -180,41 +186,99 @@ void unit_test(double **R){
 			}
 		}
 	}
-	// Print Matrix elements to see that it's correct
-	/*for(int i = 0; i < n_test; i++){
-		for(int j = 0; j < n_test; j++){
-			printf("%f\n", Matr[i][j]);
-		}
-	}*/
+
+	//PERFOMING THE TRANSFORMATION
+	jacobi_method(Matr, R, n_test);
+
 
 	printf("-------------------------------------------\nUNIT TEST\n\n");
 
-	//Known max offdiag element: 4
-	max_test = maxoffdiag(Matr, &k, &l, n_test);
-	printf("Max off diagonal element of Matr: %f\n\n", max_test);
-	
-	jacobi_method(Matr, R, n_test);
+
+
+	//------------------------------------------------
+	//CHECK FOR ORTOGONALITY
+	//----------------------------------------------
+	int c, d, e;
+	double eps = 1e-6, sum = 0;
+
+
+
+    for( c = 0 ; c < n_test ; c++ )
+    {
+       for( d = 0 ; d < n_test ; d++ )
+       {
+          Trans[d][c] = R[c][d];
+       }
+    }
+ 
+	// Multiplication of R and it's transpose
+    for ( c = 0 ; c < n_test ; c++ )
+    {
+    	for ( d = 0 ; d < n_test ; d++ )
+        {
+        	for ( e = 0 ; e < n_test ; e++ )
+        	{
+            	sum = sum + R[c][e]*Trans[e][d];
+        	}
+ 
+        	Prod[c][d] = sum;
+        	sum = 0;
+        }
+    }
+ 
+ 
+    //Checks if the result is the identity matrix with a small margin for error, eps
+    for ( c = 0 ; c < n_test ; c++ )
+    {
+        for ( d = 0 ; d < n_test ; d++ )
+        {
+        	if ( c == d )
+            {
+                if ( Prod[c][d] <= (1 - eps) || Prod[c][d] >= (1 + eps))
+                	break;
+            }
+            else
+            {
+                if ( Prod[c][d] <= (- eps) || Prod[c][d] >= eps)
+                	break;
+            }
+        }
+        if ( d != n_test )
+        	break;
+    }
+    if ( c != n_test )
+    	printf("Orthogonality of the basis R is not preserved.\n\n");
+    else
+    	printf("Orthogonality of the basis R is preserved.\n\n");
+    //-------------------------------------------------
+
+    printf("The known eigenvalues for the sample matrix Matr:\n");
+    printf("1: -4.16352, 2: -0.827046 3: 1.0, 4: 2.82705, 5: 6.16352\n");
+    printf("Computed eigenvalues:\n");
+
 
 	for(int i = 0; i < n_test; i++){
 		printf("Eigenvalue %i: %f\n", i+1, Matr[i][i]);
 	}
 	printf("-------------------------------------------\n");
 
-	delete[] Matr;
+	delete[] Matr; delete[] Trans; delete[] Prod;
 
 	return;
 
 }
 
-
-double potential(double omega, double r, int coloumb )
+//Function for calculating the potential for the non interacting case (coloumb = 0.0)
+// and the interacting case (coloumb = 1.0). Takes omega, r (aka rho) and one of the two coloumbs.
+double potential(double omega, double r, double coloumb )
 {
 	double V;
-	if ( coloumb == 0.0 ) V =  omega*omega*r*r;
-	if ( coloumb == 1.0 ) V = omega*omega*r*r + 1.0/(double)r;
+	if ( coloumb == 0.0 ) V = r*r;
+	else if ( coloumb == 1.0 ) V = omega*omega*r*r + 1.0/(double)r;
 	return V;
 }
 
+//Computes the square of each element of the transformed basis R -> U
 double *usquared( double **R, int n, int t)
 {
 	double * u2 = new double[n];
@@ -222,7 +286,6 @@ double *usquared( double **R, int n, int t)
 		u2[j] = R[j][t]*R[j][t];
 	
 	}
-		
 	//printf("U(r) = %1.3e\n", u2[i] );
 	return u2;
 }
@@ -230,19 +293,32 @@ double *usquared( double **R, int n, int t)
 
 int main( int argc, char * argv[] )
 {
-	int n =  atoi(argv[1]);
-	double rhoN =  atof(argv[2]);
-	double omega = atof(argv[3]);
-	double coloumb = atof(argv[4]);
-	std::string file = ( argv[5] );
+	int n =  atoi(argv[1]);          // Dimension of arrays
+	double rhoN =  atof(argv[2]);    // Value for rho_max
+	double coloumb = atof(argv[3]);  
+	std::string file = ( argv[4] );
+	double omega;    // Frequency
+	//if coloumb = 1 we need a omega value, if not omega is set to 1.
+	if(coloumb == 1.0){
+		printf("Enter omega value: ");
+		scanf("%lf", &omega);
+	}
+	else if(coloumb == 0.0){
+		omega = 1.0;
+	}
+	else{
+		printf("Error: Wrong value for coloumb.\n");
+		printf("usage: argv[3] = 1.0 to include Coloumb potential, else argv[3] = 0.0.");
+		return 0;
+	}
 	const char* filename = file.c_str();
 	double rho0 = 1e-10;
-	double h = ( rhoN - rho0 ) / (double) n;
+	double h = ( rhoN - rho0 ) / (double) n;  //stepelength
 	double* rho = new double[n];
 	double total_time;
 	clock_t start, finish;
 	
-	//define our tridiagonal matrix
+	//define our tridiagonal matrix A and basis R
 	double **A;
 	double **R;
 	A = new double*[n];
@@ -252,10 +328,10 @@ int main( int argc, char * argv[] )
 		R[i] = new double [n];
 	}
 
+	// Computes the elements of A
 	for ( int i = 0; i < n; i++) {
 		rho[i] = rho0 + i*h;
 		double Vi = potential( omega,  rho[i], coloumb );
-		//double Vi = rho[i]*rho[i];
 		for (int j = 0; j < n; j++) {
 			if ( i == j ) {
 				A[i][j] = 2.0 / (double) ( h*h ) + Vi;
@@ -271,9 +347,9 @@ int main( int argc, char * argv[] )
 	}
 
 	//RUNNING UNIT TESTS
-	//unit_test(R);
+	unit_test(R);
 
-
+	
 	//MAIN RUN
 	//------------------------------------
 	start = clock();
@@ -282,41 +358,34 @@ int main( int argc, char * argv[] )
 	total_time = ( ( double ) ( finish - start ) / CLOCKS_PER_SEC );
 	printf("Time spent on algorithm:  %1.3e \n", total_time);
 
-	double * lam = new double[n];
+	double * lam = new double[n];  // Array for the eigenvalues, lambda
 	
+	//Retrieving the eigenvalues from the diagonal
 	for ( int i = 0; i < n; i++) {
 		lam[i] = A[i][i];
 	}
 
 
-	//------------------------------------
 
-
-		//cout <<" | " << lam[i];
-		/*for ( int j = 0; j < n; j++) {
-			cout << A[i][j] << "\n";
-		}
-	*/
-
-	double *t = three_low ( lam, n);
-	double *sqru1 = usquared( R, n, t[0] );
-	double *sqru2 = usquared( R, n, t[1] );
-	double *sqru3 = usquared( R, n, t[2] );
+	double *t = three_low ( lam, n);    //Finding the indices of the three lowest eigenvalues
+	double *sqru1 = usquared( R, n, t[0] );  //eigenvector for the lowest eigenvalue in the transformed basis R
 
 
 	FILE *fp;
 
 	fp = fopen(filename, "w+");
 
+	//Writes the resulting u^2 to file for plotting in python
 	for (int i = 0; i < n; i++){
 		fprintf(fp, "%f\n", sqru1[i]);
 	}
 
 	fclose(fp);
+
 	
 
 	delete[] A; delete[] R; delete[] rho; delete [] t;
-	delete[] sqru1; delete[] sqru2; delete[] sqru3;
+	delete[] sqru1;
 
 	return 0;
 	
