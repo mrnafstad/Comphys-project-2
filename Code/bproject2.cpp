@@ -290,13 +290,14 @@ double *usquared( double **R, int n, int t)
 	return u2;
 }
 
-
+// When running the program you need to enter 4 values in the command line as well:
+// n, rhoN, coloumb and file (listed below)
 int main( int argc, char * argv[] )
 {
 	int n =  atoi(argv[1]);          // Dimension of arrays
 	double rhoN =  atof(argv[2]);    // Value for rho_max
-	double coloumb = atof(argv[3]);  
-	std::string file = ( argv[4] );
+	double coloumb = atof(argv[3]);  // Value to determine if there is a coloumb potential present, 1.0 for yes, 0.0 for no.
+	std::string file = ( argv[4] );  // Give filename for the output file
 	double omega;    // Frequency
 	//if coloumb = 1 we need a omega value, if not omega is set to 1.
 	if(coloumb == 1.0){
@@ -370,7 +371,7 @@ int main( int argc, char * argv[] )
 	double *t = three_low ( lam, n);    //Finding the indices of the three lowest eigenvalues
 	double *sqru1 = usquared( R, n, t[0] );  //eigenvector for the lowest eigenvalue in the transformed basis R
 
-
+	
 	FILE *fp;
 
 	fp = fopen(filename, "w+");
@@ -381,6 +382,7 @@ int main( int argc, char * argv[] )
 	}
 
 	fclose(fp);
+
 
 	
 
